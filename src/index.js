@@ -36,50 +36,50 @@ client.on("messageCreate", (message) => {
     const embed = new EmbedBuilder()
       .setTitle("📘Public Server Rules")
       .setDescription(`
-        1) 🤝
-        Be Respectful
-        • Treat everyone kindly.
-        • No bullying, hate speech, racism, or discrimination.
-        • No rude, offensive, or harassing messages.
+1) 🤝
+Be Respectful
+• Treat everyone kindly.
+• No bullying, hate speech, racism, or discrimination.
+• No rude, offensive, or harassing messages.
 
-        2) 🌍
-        Language Rules
-        • English is the main language.
-        • You can use other languages, but NOT to insult, hide bad behavior, or break rules.
+2) 🌍
+Language Rules
+• English is the main language.
+• You can use other languages, but NOT to insult, hide bad behavior, or break rules.
 
-        3) 🙅
-        No Begging
-        • Don't ask for roles, permissions, or unfair advantages.
+3) 🙅
+No Begging
+• Don't ask for roles, permissions, or unfair advantages.
 
-        4) 🛠️
-        Follow Staff Instructions
-        • Listen to moderators and admins at all times.
-        • Don't argue or create drama with staff decisions.
+4) 🛠️
+Follow Staff Instructions
+• Listen to moderators and admins at all times.
+• Don't argue or create drama with staff decisions.
 
-        5) 💬
-        No Spamming
-        • No message spam, emoji spam, or bot command spam.
-        • Raiding = instant ban.
+5) 💬
+No Spamming
+• No message spam, emoji spam, or bot command spam.
+• Raiding = instant ban.
 
-        6) 🎧
-        No Mic Spam (VC)
-        • Don't scream, blast music, or disrupt voice chats.
-        • Use push-to-talk if needed.
+6) 🎧
+No Mic Spam (VC)
+• Don't scream, blast music, or disrupt voice chats.
+• Use push-to-talk if needed.
 
-        7) 🎭
-        No Impersonation
-        • Don't pretend to be staff
+7) 🎭
+No Impersonation
+• Don't pretend to be staff
 
-        8) 🧒
-        Be Mature
-        • No unnecessary drama, fights, or attention-seeking behavior.
-        • Act responsibly
+8) 🧒
+Be Mature
+• No unnecessary drama, fights, or attention-seeking behavior.
+• Act responsibly
 
-        9) 🧠
-        Use Common Sense
-        • If you think it might break the rules… don't do it.
-        • Don't look for loopholes or try to bend rules.
-        `)
+9) 🧠
+Use Common Sense
+• If you think it might break the rules… don't do it.
+• Don't look for loopholes or try to bend rules.
+  `)
       .setColor("#000000");
 
     client.channels.cache.get("1465935638477144298").send({ embeds: [embed] });
@@ -115,6 +115,19 @@ client.on("messageCreate", (message) => {
     } else {
       message.reply("Tf you ping me for??");
     }
+  }
+
+    // Command format: +say your message here
+  if (message.content.startsWith("!say ")) {
+    const text = message.content.slice(5).trim(); // remove "+say " from start
+
+    if (text.length === 0) return message.reply("You need to provide a message.");
+
+    // Delete the admin’s original command message (optional)
+    message.delete().catch(() => {});
+
+    // Send the text as the bot
+    message.channel.send(text);
   }
 })
 
@@ -375,30 +388,5 @@ client.on("interactionCreate", async (interaction) => {
   }
 })
 
-
-
-// Detect bot
-// client.on("messageCreate", (message) => {
-//   if (message.author.id !== "1429448834282688654") {
-//     if (message.author.bot) {
-
-//     }
-//   }
-// })
-
-
-
-// client.on("messageCreate", (message) => {
-
-//   let num = Number.parseInt(message.content);
-//   console.log(num);
-
-//   if (num !== NaN) {
-//     if (num - lastNumber === 1) {
-//       lastNumber++;
-//       message.react("✅");
-//     }
-//   }
-// })
 
 client.login(TOKEN);
