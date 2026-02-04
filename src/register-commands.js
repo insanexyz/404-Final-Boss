@@ -204,12 +204,12 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
     // Register to multiple specific servers (immediate updates)
     // await rest.put(
-    //   Routes.applicationGuildCommands(process.env.CLIENT_ID, "1424982467927998526"),
+    //   Routes.applicationGuildCommands(process.env.CLIENT_ID, "some other id"),
     //   { body: commands }
     // )
     
     await rest.put(
-      Routes.applicationGuildCommands(process.env.CLIENT_ID, "1465754117879103736"),
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
       { body: commands }
     )
 

@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, EmbedBuilder, Embed, messageLink } = require("discord.js");
+const { Client, IntentsBitField, EmbedBuilder, Embed, messageLink, ActivityType } = require("discord.js");
 require("dotenv").config() // gives access to content of env file anywhere in this file
 const { OpenAI } = require("openai");
 
@@ -15,8 +15,51 @@ const client = new Client({
   ]
 })
 
+function getRandomInt(min, max) {
+  // Ensure min and max are integers
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  // Generate random integer between min and max (inclusive)
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+let status = [
+  {
+    name: "CornHub",
+    type: ActivityType.Streaming,
+    url: "https://www.youtube.com/watch?v=6UFjzQXpd-Q"
+  },
+  {
+    name: "Blowing Insane",
+    tupe: ActivityType.Playing
+  },
+  {
+    name: "Giving head to Insane",
+    tupe: ActivityType.Playing
+  },
+  {
+    name: "404 Server",
+    type: ActivityType.Watching
+  },
+  {
+    name: "Cute girl screaming",
+    type: ActivityType.Listening
+  }
+]
+
 client.on("clientReady", (cl) => {
   console.log(`${cl.user.tag} is ready and online 🟢 !!`);
+
+  // client.user.setActivity({
+    // {
+
+    // }
+  // })
+
+  setInterval(() => {
+    let random = getRandomInt(0, status.length - 1);
+    client.user.setActivity(status[random]);
+  }, 10000)
 })
 
 // Basic
@@ -24,12 +67,15 @@ client.on("messageCreate", (message) => {
 
   // console.log(typeof message);
 
-  if (message.author.id === "1429448834282688654") {
+  if (message.author.id === "1467947205049450668") {
     return;
   }
 
   if (message.content == "hello") {
-    message.reply("hello");
+    const x = getRandomInt(0, 1);
+    if (x) {
+      message.reply("https://nohello.net");
+    }
   }
 
   if (message.content === "+rules") {
@@ -128,6 +174,10 @@ Use Common Sense
 
     // Send the text as the bot
     message.channel.send(text);
+  }
+
+  if (message.content === "summon her") {
+    message.reply("<@833593810444746775>");
   }
 })
 
@@ -293,8 +343,37 @@ client.on("interactionCreate", async (interaction) => {
     });
     interaction.reply("Test done");
   }
-  
 });
+
+
+// Interaction listener for buttons
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isButton()) return;
+
+  await interaction.deferReply({ ephemeral: true });
+
+  // Fetch the role from the customID of the button which is equa; to the role ID
+  const role = interaction.guild.roles.cache.get(interaction.customId);
+
+  if (!role) {
+    interaction.editReply({
+      content: "Couldnt find the role!",
+    });
+    return;
+  }
+
+  const hasRole = interaction.member.roles.cache.has(role.id);
+
+  if (hasRole) {
+    await interaction.member.roles.remove(role);
+    await interaction.editReply(`The ${role} has been removed.`);
+  } else {
+    await interaction.member.roles.add(role);
+    await interaction.editReply(`The ${role} has been added.`);
+  }
+
+})
+
 
 
 

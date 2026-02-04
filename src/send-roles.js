@@ -26,13 +26,19 @@ const role = [
   {
     id: "1467955780367028265",
     label: "3d artist"
+  },
+  {
+    id: "1234",
+    label: "fake role"
   }
 ]
 
 client.on("clientReady", async (cl) => {
   try {
 
-    const channel = await client.channels.cache.get("1467948842283569183");
+    // to send to which channel
+    // const channel = await client.channels.cache.get("1467948842283569183"); // Test channel
+    const channel = await client.channels.cache.get("1468594117469667490");
 
     if (!channel) {
       console.log("Channel does not exists !!");
