@@ -62,6 +62,7 @@ client.on("clientReady", (cl) => {
   }, 10000)
 })
 
+
 // Basic
 client.on("messageCreate", (message) => {
 
