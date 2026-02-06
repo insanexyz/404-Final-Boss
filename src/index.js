@@ -159,6 +159,9 @@ Use Common Sense
 
     // Command format: +say your message here
   if (message.content.startsWith("!say ")) {
+
+    if (message.author.id !== "434738865136336896") return;
+
     const text = message.content.slice(5).trim(); // remove "+say " from start
 
     if (text.length === 0) return message.reply("You need to provide a message.");
