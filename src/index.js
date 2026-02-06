@@ -160,17 +160,17 @@ Use Common Sense
     // Command format: +say your message here
   if (message.content.startsWith("!say ")) {
 
-    if (message.author.id !== "434738865136336896") return;
+    if (message.author.id === "434738865136336896" || message.author.id === "1383428957486977119") {
+      const text = message.content.slice(5).trim(); // remove "+say " from start
 
-    const text = message.content.slice(5).trim(); // remove "+say " from start
+      if (text.length === 0) return message.reply("You need to provide a message.");
 
-    if (text.length === 0) return message.reply("You need to provide a message.");
+      // Delete the admin’s original command message (optional)
+      message.delete().catch(() => {});
 
-    // Delete the admin’s original command message (optional)
-    message.delete().catch(() => {});
-
-    // Send the text as the bot
+      // Send the text as the bot
     message.channel.send(text);
+    }
   }
 
   if (message.content === "summon her") {
