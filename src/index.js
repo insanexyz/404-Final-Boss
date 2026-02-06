@@ -1,6 +1,7 @@
 const { Client, IntentsBitField, EmbedBuilder, Embed, messageLink, ActivityType } = require("discord.js");
 require("dotenv").config() // gives access to content of env file anywhere in this file
 const { OpenAI } = require("openai");
+const { getRandomInt } = require("./utils.js");
 
 const TOKEN = process.env.TOKEN;
 
@@ -14,14 +15,6 @@ const client = new Client({
     IntentsBitField.Flags.MessageContent,
   ]
 })
-
-function getRandomInt(min, max) {
-  // Ensure min and max are integers
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  // Generate random integer between min and max (inclusive)
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 let status = [
   {
