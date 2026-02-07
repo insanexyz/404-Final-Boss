@@ -44,9 +44,9 @@ client.on("clientReady", (cl) => {
   console.log(`${cl.user.tag} is ready and online 🟢 !!`);
 
   // client.user.setActivity({
-    // {
+  // {
 
-    // }
+  // }
   // })
 
   setInterval(() => {
@@ -157,7 +157,7 @@ Use Common Sense
     }
   }
 
-    // Command format: +say your message here
+  // Command format: +say your message here
   if (message.content.startsWith("!say ")) {
 
     if (message.author.id === "434738865136336896" || message.author.id === "1383428957486977119") {
@@ -166,10 +166,10 @@ Use Common Sense
       if (text.length === 0) return message.reply("You need to provide a message.");
 
       // Delete the admin’s original command message (optional)
-      message.delete().catch(() => {});
+      message.delete().catch(() => { });
 
       // Send the text as the bot
-    message.channel.send(text);
+      message.channel.send(text);
     }
   }
 
@@ -182,14 +182,14 @@ Use Common Sense
 // Log all messages
 const LOG_CHANNEL_IDS = "1466488701709451428";
 client.on('messageCreate', async (message) => {
-    // Ignore messages from bots to prevent infinite loops
-    if (message.author.bot) return;
-    if (message.guildId !== "1465754117879103736") return;
+  // Ignore messages from bots to prevent infinite loops
+  if (message.author.bot) return;
+  if (message.guildId !== "1465754117879103736") return;
 
-    const logChannel = client.channels.cache.get(LOG_CHANNEL_IDS);
-    if (!logChannel) return;
+  const logChannel = client.channels.cache.get(LOG_CHANNEL_IDS);
+  if (!logChannel) return;
 
-    logChannel.send(`New message from ${message.author.tag} in ${message.channel.name}: ${message.content}`);
+  logChannel.send(`New message from ${message.author.tag} in ${message.channel.name}: ${message.content}`);
 });
 
 // Listen to slash commands and do
@@ -330,7 +330,7 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "test") {
     // console.log(interaction.guild.iconURL());
-    let messages = await interaction.channel.messages.fetch({limit : 12});
+    let messages = await interaction.channel.messages.fetch({ limit: 12 });
 
     messages.forEach(msg => {
 
@@ -395,13 +395,13 @@ client.on("interactionCreate", async (interaction) => {
     let content = "";
 
     switch (personality) {
-      case "uwu": 
+      case "uwu":
         content = "You are cute uwu chan, be full uwu, uwu bro!!. You are very very funny and not serious at all. And you are not formal. You are like everyones fav uwu waifu." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned.";
         break;
       case "sigma":
         content = "You are full sigma, hold back nothing. You are extremely serious. You dont give a damn and are too arrogant." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned."
         break;
-      case "giga digga chad": 
+      case "giga digga chad":
         content = "You are giga chad, you are him. You treat others like children and you are their mentor." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned.";
         break;
       case "very pro nasa hacker":
@@ -460,7 +460,7 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
 
-    interaction.editReply("Your question: " + query + "\n" + "Personality: " +  personality + "\n" + "Response: " + response.choices[0].message.content);
+    interaction.editReply("Your question: " + query + "\n" + "Personality: " + personality + "\n" + "Response: " + response.choices[0].message.content);
   }
 })
 
