@@ -150,11 +150,12 @@ Use Common Sense
   // }
 
   if (message.mentions.has(client.user)) {
-    if (message.author.id === "833593810444746775" || message.author.id === "1383428957486977119") {
-      message.reply("Hey!! Whats up");
-    } else {
-      message.reply("Tf you ping me for??");
-    }
+    // if (message.author.id === "833593810444746775" || message.author.id === "1383428957486977119") {
+    //   message.reply("Hey!! Whats up");
+    // } else {
+    //   message.reply("Tf you ping me for??");
+    // }
+    message.delete();
   }
 
   // Command format: +say your message here
