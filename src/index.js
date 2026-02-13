@@ -190,7 +190,11 @@ client.on('messageCreate', async (message) => {
   const logChannel = client.channels.cache.get(LOG_CHANNEL_IDS);
   if (!logChannel) return;
 
-  logChannel.send(`New message from ${message.author} in ${message.channel.name}: ${message.content}`);
+  // logChannel.send(`New message from ${message.author.tag} in ${message.channel.name}: ${message.content}`);
+  logChannel.send({
+    content: `New message from ${message.author.tag} in ${message.channel.name}: ${message.content}`,
+    allowedMentions: { parse: [] } // 🚫 disables all mentions
+  });
 });
 
 // Listen to slash commands and do
