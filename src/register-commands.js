@@ -191,6 +191,25 @@ const commands = [
         type: ApplicationCommandOptionType.String,
       }
     ]
+  },
+
+  {
+    name: "spam",
+    description: "Spam with it uhhh wow",
+    options: [
+      {
+        name: "count",
+        description: "Enter count",
+        type: ApplicationCommandOptionType.Number,
+        required: true,
+      },
+      {
+        name: "content",
+        description: "Enter content to spam",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+      }
+    ]
   }
 ]
 

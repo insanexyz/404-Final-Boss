@@ -347,6 +347,26 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
+client.on("interactionCreate", async (interaction) => {
+  if (interaction.commandName === "spam") {
+
+    let num = interaction.options.get("count").value;
+    let content = interaction.options.get("content").value;
+
+    if (content.length > 1999) {
+      await interaction.reply("Too long message, exceeds 2000 characters");
+      return;
+    }
+    if (!Number.isInteger(num)) return;
+
+    await interaction.reply(`Spamming "${content}" ${num} times...`);
+
+    for (let i = 0; i < num; i++) {
+      await interaction.channel.send(`${content}`);
+    }
+  }
+})
+
 
 // Interaction listener for buttons
 client.on("interactionCreate", async (interaction) => {
