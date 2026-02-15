@@ -359,6 +359,10 @@ client.on("interactionCreate", async (interaction) => {
     }
     if (!Number.isInteger(num)) return;
 
+    if (num > 100) {
+      await interaction.reply(`Attempt to spam ${num} times. Count cannot exceeded 100!`);
+    }
+
     await interaction.reply(`Spamming "${content}" ${num} times...`);
 
     for (let i = 0; i < num; i++) {
