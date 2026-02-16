@@ -182,6 +182,7 @@ Use Common Sense
 
 // Log all messages
 const LOG_CHANNEL_IDS = "1466488701709451428";
+const LOG_IGNORE_CHANNELS = ["1466130239057821716"];
 client.on('messageCreate', async (message) => {
   // Ignore messages from bots to prevent infinite loops
   if (message.author.bot) return;
@@ -189,6 +190,9 @@ client.on('messageCreate', async (message) => {
 
   const logChannel = client.channels.cache.get(LOG_CHANNEL_IDS);
   if (!logChannel) return;
+
+  // Ignore spam channels
+  if (LOG_IGNORE_CHANNELS.includes(message.channelId)) return;
 
   // logChannel.send(`New message from ${message.author.tag} in ${message.channel.name}: ${message.content}`);
   logChannel.send({
