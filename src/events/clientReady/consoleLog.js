@@ -26,14 +26,13 @@ module.exports = (client, arg) => {
     }
   ]
 
-  client.on("clientReady", (cl) => {
-    console.log(`${cl.user.tag} is ready and online 🟢 !!`);
 
-    setInterval(() => {
-      let random = getRandomInt(0, status.length - 1);
-      client.user.setActivity(status[random]);
-    }, 10000)
-  })
+  // The arg passed here is also client
+  console.log(`${client.user.tag} is ready and online 🟢 !!`);
 
+  setInterval(() => {
+    let random = getRandomInt(0, status.length - 1);
+    client.user.setActivity(status[random]);
+  }, 10000)
 }
 
