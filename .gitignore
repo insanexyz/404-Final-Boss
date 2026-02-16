@@ -77,3 +77,6 @@ jspm_packages/
 
 # Serverless directories
 .serverless
+
+# test files
+test*
