@@ -1,7 +1,8 @@
 const { Client, IntentsBitField, EmbedBuilder, Embed, messageLink, ActivityType } = require("discord.js");
 require("dotenv").config() // gives access to content of env file anywhere in this file
 const { OpenAI } = require("openai");
-const { getRandomInt } = require("../utils/getRandomInt.js");
+const { getRandomInt } = require("./utils/getRandomInt.js");
+const eventHandler = require("./handlers/eventHandler.js");
 
 const TOKEN = process.env.TOKEN;
 
@@ -54,6 +55,8 @@ client.on("clientReady", (cl) => {
     client.user.setActivity(status[random]);
   }, 10000)
 })
+
+eventHandler(client);
 
 
 // Basic
