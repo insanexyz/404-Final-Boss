@@ -48,18 +48,33 @@ module.exports = async (client, interaction) => {
         }
       }
 
-    if (commandObject.botPermissions?.length) {
-      for (const permission of commandObject.botPermissions) {
-        const bot = interaction.guild.members.me;
-        if (!bot.permissions.has(permission)) {
+      if (commandObject.botPermissions?.length) {
+        for (const permission of commandObject.botPermissions) {
+          const bot = interaction.guild.members.me;
+          if (!bot.permissions.has(permission)) {
+            interaction.reply({
+              content: "I don't have enough perms",
+              ephemeral: true
+            });
+            return;
+          }
+        }
+      }
+
+      if (commandObject.allowedRoles?.length) {
+        const hasRole = interaction.member.roles.cache.some(role => {
+          return commandObject.allowedRoles.includes(role.id);
+        });
+
+        if (!hasRole) {
           interaction.reply({
-            content: "I don't have enough perms",
+            content: "You don't have permission to run this command!",
             ephemeral: true
           });
+
           return;
         }
       }
-    }
 
       await commandObject.callback(client, interaction);
 
