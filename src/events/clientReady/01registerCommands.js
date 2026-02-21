@@ -9,7 +9,7 @@ module.exports = async (client) => {
   try {
 
     const localCommands = getLocalCommands();
-    const applicationCommands = getApplicationCommands();
+    const applicationCommands = await getApplicationCommands(client, config.guildID);
 
     for (const localCommand of localCommands) {
       const { name, description, options } = localCommand;
@@ -51,7 +51,6 @@ module.exports = async (client) => {
         console.log(`Registered command ${name}`);
       }
     }
-
 
   } catch (error) {
     console.log(`Error in registering commands: ${error}`);
