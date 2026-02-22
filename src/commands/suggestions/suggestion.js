@@ -15,18 +15,24 @@ module.exports = {
 
   /**
    * 
-   * @param {Client} client 
-   * @param {Interaction} interaction 
+   * @param {client} Client 
+   * @param {interaction} Interaction 
    */
 
-  callback: (client, interaction) => {
-    const suggestion = interaction.options.get("title").value;
+  callback: async (client, interaction) => {
+    const suggestion = interaction.options.get("suggest").value;
     color = "#FFF000";
     const embed = new EmbedBuilder()
-      .setTitle(`Suggested by: ${interaction.mem}`)
+      .setTitle(`Suggested by: ${interaction.member.displayName}`)
       .setDescription(suggestion)
       .setColor(color);
 
     interaction.reply({ embeds: [embed] });
+
+    const message = await interaction.fetchReply();
+
+    // Add reactions
+    await message.react("⬆️");
+    await message.react("⬇️");
   }
 }
