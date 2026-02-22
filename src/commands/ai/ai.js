@@ -1,5 +1,36 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 
+const PERSONALITY_PROMPTS = {
+  uwu: "You are a cute uwu personality. Be playful, funny, informal, human-sounding, and reply in <= 20 words.",
+  sigma: "You are ultra-confident and serious. Be direct, arrogant, informal, and reply in <= 20 words.",
+  "giga digga chad": "You are a giga chad mentor vibe. Be bold, informal, confident, and reply in <= 20 words.",
+  "very pro nasa hacker": "You are an elite hacker genius vibe. Be sharp, informal, confident, and reply in <= 20 words."
+};
+
+const DEFAULT_MODEL = "tinyllama:1.1b-chat";
+const DEFAULT_BASE_URL = "http://127.0.0.1:11434";
+const REQUEST_TIMEOUT_MS = 15000;
+const DISCORD_MAX_MESSAGE_LENGTH = 2000;
+
+const withTimeout = async (url, options, timeoutMs) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+const trimForDiscord = (text) => {
+  if (text.length <= DISCORD_MAX_MESSAGE_LENGTH) return text;
+  return `${text.slice(0, DISCORD_MAX_MESSAGE_LENGTH - 3)}...`;
+};
+
 module.exports = {
 
   name: "ai",
@@ -41,91 +72,69 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    const { OpenAI } = require("openai");
-
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    })
-
-
     const query = interaction.options.get("query").value;
-    // const ALLOWED_AICHAT_CHANNELS = ["1465916890936246312", "1465788754156322837", "1465754118630146313", "1369673178657329314"];
-
-    // if (!ALLOWED_AICHAT_CHANNELS.includes(interaction.channelId)) {
-    //   await interaction.reply("You are not allowed to use this command here");
-    //   return;
-    // }
-
-    // Get reply type
     const personality = interaction.options.get("personality").value;
-    let content = "";
-
-    switch (personality) {
-      case "uwu":
-        content = "You are cute uwu chan, be full uwu, uwu bro!!. You are very very funny and not serious at all. And you are not formal. You are like everyones fav uwu waifu." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned.";
-        break;
-      case "sigma":
-        content = "You are full sigma, hold back nothing. You are extremely serious. You dont give a damn and are too arrogant." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned."
-        break;
-      case "giga digga chad":
-        content = "You are giga chad, you are him. You treat others like children and you are their mentor." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned.";
-        break;
-      case "very pro nasa hacker":
-        content = "You are very pro level nasa hacker with so much knowledge even god would feel shy." + "And you reply in no more than 20 words!!" + "Dont sound like a robot or a teacher at all, be like a real person talking with the personality mentioned."
-        break;
-    }
-
-
-    // The conversations array have one system prompt and 5 other from user and casca bot and no more than that as its created each time from fresh
-    let conversations = [];
-    conversations.push({
-      role: "system",
-      content: content,
-    })
-
-    let previousMessages = await interaction.channel.messages.fetch({ limit: 5 });
-    previousMessages.reverse();
-
-    previousMessages.forEach((msg) => {
-
-      // If message is from some other bot except casca then ignore
-      if (msg.author.bot && msg.author.id !== client.user.id) return;
-
-      // sanitize usernames as openai dont allow any special characters. remove all spaces with _ and remove special characters
-      const username = msg.author.username.replace(/\s+/g, '_').replace(/[^\w\s]/gi, '');
-
-      if (msg.author.id === client.user.id) {
-        conversations.push({
-          role: "assistant",
-          name: username,
-          content: msg.content,
-        });
-
-        return;
-      }
-
-      conversations.push({
-        role: "user",
-        name: username,
-        content: msg.content,
-      })
-    })
+    const systemPrompt = PERSONALITY_PROMPTS[personality] || PERSONALITY_PROMPTS.sigma;
+    const model = process.env.LOCAL_AI_MODEL || DEFAULT_MODEL;
+    const baseUrl = process.env.LOCAL_AI_BASE_URL || DEFAULT_BASE_URL;
+    const prompt = `${systemPrompt}\n\nUser question:\n${query}`;
 
     await interaction.deferReply();
 
-    // openai api response
-    const response = await openai.chat.completions.create({
-      model: "gpt-5-nano",
-      messages: conversations
-    }).catch((error) => {
-      console.log("OpenAI error:\n", error);
-    })
+    let generatedText = "";
+    try {
+      const res = await withTimeout(`${baseUrl}/api/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model,
+          prompt,
+          stream: false,
+          keep_alive: "0s",
+          options: {
+            num_predict: 96,
+            temperature: 0.7
+          }
+        })
+      }, REQUEST_TIMEOUT_MS);
 
-    if (!response) {
-      interaction.editReply("There was some error with the OPENAI api. Try again in some moments or DM Insane.");
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Local AI responded with ${res.status}: ${errorText.slice(0, 200)}`);
+      }
+
+      const data = await res.json();
+      generatedText = (data.response || "").trim();
+    } catch (error) {
+      console.log("Local AI error:\n", error);
+      await interaction.editReply({
+        content: "Local AI failed. Ensure Ollama is running and the model exists, then try again.",
+        allowedMentions: { parse: [] }
+      });
       return;
     }
 
-    interaction.editReply("Your question: " + query + "\n" + "Personality: " + personality + "\n" + "Response: " + response.choices[0].message.content);
+    if (!generatedText) {
+      await interaction.editReply({
+        content: "Local AI returned an empty response. Try again.",
+        allowedMentions: { parse: [] }
+      });
+      return;
+    }
+
+    const safeReply = trimForDiscord(
+      "Your question: " + query + "\n" +
+      "Personality: " + personality + "\n" +
+      "Response: " + generatedText
+    );
+
+    await interaction.editReply(
+      {
+        content: safeReply,
+        allowedMentions: { parse: [] }
+      }
+    );
   }
 }

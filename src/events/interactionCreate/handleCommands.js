@@ -1,7 +1,11 @@
-const config = require("../../../config.json");
 const getLocalCommands = require("../../utils/getLocalCommands");
 
 module.exports = async (client, interaction) => {
+  const devs = (process.env.DEVS || "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const testServer = process.env.TEST_SERVER_ID;
 
   if (interaction.isChatInputCommand()) {
 
@@ -17,23 +21,23 @@ module.exports = async (client, interaction) => {
       if (!commandObject) return;
 
       if (commandObject.devOnly) {
-        if (!config.devs.includes(interaction.member.id)) {
+        if (!devs.includes(interaction.member.id)) {
           interaction.reply({
             content: "Only devs can run this command",
             ephemeral: true
-          })
+          });
+          return;
         }
-        return;
       }
 
       if (commandObject.testOnly) {
-        if (!(interaction.guild.id === testServer)) {
+        if (testServer && interaction.guild.id !== testServer) {
           interaction.reply({
             content: "This command cannot run here!",
-            epemeral: true
-          })
+            ephemeral: true
+          });
+          return;
         }
-        return;
       }
 
       if (commandObject.permissionsRequired?.length) {
