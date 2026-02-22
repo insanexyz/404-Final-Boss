@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, AttachmentBuilder } = require("discord.js");
+const { ApplicationCommandOptionType, AttachmentBuilder, strikethrough } = require("discord.js");
 const { createCanvas } = require("@napi-rs/canvas");
 
 const SYSTEM_PROMPT = "Always reply in English only.";
@@ -196,6 +196,7 @@ module.exports = {
       required: true,
     }
   ],
+  skip: true,
 
   callback: async (client, interaction) => {
     const query = interaction.options.get("query").value;
