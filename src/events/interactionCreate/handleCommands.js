@@ -1,11 +1,24 @@
 const getLocalCommands = require("../../utils/getLocalCommands");
+const { Client, Interaction, Role } = require("discord.js");
+
+
 
 module.exports = async (client, interaction) => {
+
+  /**
+   * @param {Client} lient
+   * @param {Interaction} interaction
+   * @param {Role} role
+   * 
+   */
+
   const devs = (process.env.DEVS || "")
     .split(",")
     .map((id) => id.trim())
     .filter(Boolean);
   const testServer = process.env.TEST_SERVER_ID;
+
+
 
   if (interaction.isChatInputCommand()) {
 
@@ -19,6 +32,11 @@ module.exports = async (client, interaction) => {
 
       // If for some reason
       if (!commandObject) return;
+
+      if (commandObject.skip) {
+        interaction.reply("This command is paused right now.");
+        return;
+      }
 
       if (commandObject.devOnly) {
         if (!devs.includes(interaction.member.id)) {
@@ -65,12 +83,19 @@ module.exports = async (client, interaction) => {
         }
       }
 
-      if (commandObject.allowedRoles?.length) {
-        const hasRole = interaction.member.roles.cache.some(role => {
-          return commandObject.allowedRoles.includes(role.id);
-        });
+      if (commandObject.minAllowedRole) {
+        const minAllowedRole = interaction.guild.roles.cache.get(commandObject.minAllowedRole);
 
-        if (!hasRole) {
+        if (!minAllowedRole) {
+          interaction.reply("Some problem with min allowed role settings");
+          return;
+        }
+
+        const minAllowedRolePosition = minAllowedRole.position;
+        const requestUserHighestRolePosition = interaction.member.roles.highest.position;
+
+
+        if (requestUserHighestRolePosition < minAllowedRolePosition) {
           interaction.reply({
             content: "You don't have permission to run this command!",
             ephemeral: true
