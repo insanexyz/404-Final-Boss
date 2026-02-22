@@ -5,6 +5,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="${PROJECT_ROOT}/.env"
 DEFAULT_MODEL="tinyllama:1.1b-chat"
 DEFAULT_BASE_URL="http://127.0.0.1:11434"
+export PATH="$HOME/.local/bin:$PATH"
 
 say() {
   printf "\n%s\n" "$1"
@@ -74,8 +75,47 @@ ollama_is_healthy() {
 install_ollama() {
   case "$OS" in
     Linux)
-      say "Installing Ollama via official installer..."
-      curl -fsSL https://ollama.com/install.sh | sh
+      local arch
+      case "$(uname -m)" in
+        x86_64) arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *)
+          echo "Unsupported Linux architecture: $(uname -m)"
+          exit 1
+          ;;
+      esac
+
+      local flavor="${OLLAMA_LINUX_FLAVOR:-standard}"
+      local asset="ollama-linux-${arch}.tar.zst"
+      if [[ "$arch" == "amd64" && "$flavor" == "rocm" ]]; then
+        asset="ollama-linux-${arch}-rocm.tar.zst"
+      fi
+
+      if ! command -v zstd >/dev/null 2>&1; then
+        echo "zstd is required for no-sudo Linux install. Install it first (example: sudo pacman -S zstd)."
+        exit 1
+      fi
+
+      say "Installing Ollama to ~/.local (no sudo)..."
+      say "Using asset: ${asset}"
+
+      local release_json
+      release_json="$(curl -fsSL https://api.github.com/repos/ollama/ollama/releases/latest)"
+      local download_url
+      download_url="$(printf "%s" "$release_json" | rg -o "https://[^\"]*${asset}" | head -n 1)"
+
+      if [[ -z "$download_url" ]]; then
+        echo "Could not find release asset URL for ${asset}."
+        exit 1
+      fi
+
+      local tmp_archive
+      tmp_archive="$(mktemp --suffix=.tar.zst)"
+      mkdir -p "$HOME/.local"
+
+      curl -fL -o "$tmp_archive" "$download_url"
+      zstd -d -c "$tmp_archive" | tar -xf - -C "$HOME/.local"
+      rm -f "$tmp_archive"
       ;;
     Darwin)
       if command -v brew >/dev/null 2>&1; then
