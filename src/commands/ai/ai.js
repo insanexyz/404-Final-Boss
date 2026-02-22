@@ -77,9 +77,48 @@ const wrapLines = (ctx, text, maxWidth, maxLines) => {
   return lines;
 };
 
-const buildAiCard = (query, response, model) => {
-  const width = 1080;
-  const height = 620;
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const maxLineWidth = (ctx, lines) => {
+  let max = 0;
+  for (const line of lines) {
+    const width = ctx.measureText(line).width;
+    if (width > max) max = width;
+  }
+  return max;
+};
+
+const buildAiCard = (query, response) => {
+  const measureCanvas = createCanvas(10, 10);
+  const measureCtx = measureCanvas.getContext("2d");
+
+  measureCtx.font = "500 24px Sans";
+  const measureQLines = wrapLines(measureCtx, query, 1100, 40);
+  const measureALines = wrapLines(measureCtx, response, 1100, 80);
+  const contentMaxWidth = Math.max(
+    maxLineWidth(measureCtx, measureQLines),
+    maxLineWidth(measureCtx, measureALines),
+    420
+  );
+
+  const contentWidth = clamp(Math.ceil(contentMaxWidth) + 70, 620, 1120);
+  const cardX = 66;
+  const cardY = 24;
+  const blockTitleGap = 34;
+  const blockTopPadding = 56;
+  const blockBottomPadding = 24;
+  const lineHeight = 30;
+  const blockGap = 22;
+
+  const qHeight = blockTopPadding + blockBottomPadding + (measureQLines.length * lineHeight);
+  const aHeight = blockTopPadding + blockBottomPadding + (measureALines.length * lineHeight);
+  const headerY = 96;
+  const qY = 130;
+  const aY = qY + qHeight + blockGap;
+  const footerPadding = 54;
+
+  const width = clamp(cardX * 2 + contentWidth, 760, 1280);
+  const height = clamp(aY + aHeight + footerPadding, 420, 1900);
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
 
@@ -111,39 +150,35 @@ const buildAiCard = (query, response, model) => {
   ctx.font = "700 50px Sans";
   ctx.fillText("404 AI Response", 66, 96);
 
-  drawRoundedRect(ctx, 66, 130, 948, 120, 18);
+  drawRoundedRect(ctx, cardX, qY, contentWidth, qHeight, 18);
   ctx.fillStyle = "rgba(49, 46, 129, 0.9)";
   ctx.fill();
   ctx.fillStyle = "#c4b5fd";
   ctx.font = "700 22px Sans";
-  ctx.fillText("QUESTION", 86, 164);
+  ctx.fillText("QUESTION", cardX + 20, qY + blockTitleGap);
   ctx.fillStyle = "#f5f3ff";
   ctx.font = "500 24px Sans";
-  const qLines = wrapLines(ctx, query, 900, 3);
-  let y = 198;
+  const qLines = wrapLines(ctx, query, contentWidth - 40, 40);
+  let y = qY + blockTopPadding + 12;
   for (const line of qLines) {
-    ctx.fillText(line, 86, y);
+    ctx.fillText(line, cardX + 20, y);
     y += 30;
   }
 
-  drawRoundedRect(ctx, 66, 272, 948, 260, 18);
+  drawRoundedRect(ctx, cardX, aY, contentWidth, aHeight, 18);
   ctx.fillStyle = "rgba(49, 46, 129, 0.9)";
   ctx.fill();
   ctx.fillStyle = "#c4b5fd";
   ctx.font = "700 22px Sans";
-  ctx.fillText("ANSWER", 86, 306);
+  ctx.fillText("ANSWER", cardX + 20, aY + blockTitleGap);
   ctx.fillStyle = "#f5f3ff";
   ctx.font = "500 24px Sans";
-  const aLines = wrapLines(ctx, response, 900, 8);
-  y = 340;
+  const aLines = wrapLines(ctx, response, contentWidth - 40, 80);
+  y = aY + blockTopPadding + 12;
   for (const line of aLines) {
-    ctx.fillText(line, 86, y);
+    ctx.fillText(line, cardX + 20, y);
     y += 30;
   }
-
-  ctx.fillStyle = "rgba(221, 214, 254, 0.85)";
-  ctx.font = "500 18px Monospace";
-  ctx.fillText(`Model: ${model}`, 66, 578);
 
   ctx.restore();
   return canvas.toBuffer("image/png");
@@ -219,7 +254,7 @@ module.exports = {
     }
 
     const safeReply = sanitizeModelOutput(generatedText);
-    const card = buildAiCard(query, safeReply, model);
+    const card = buildAiCard(query, safeReply);
     const attachment = new AttachmentBuilder(card, { name: "ai-response-card.png" });
 
     await interaction.editReply(
