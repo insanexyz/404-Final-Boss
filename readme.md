@@ -14,7 +14,5 @@ Server link -> https://discord.gg/gVEuRuJdYN
 I am Insane and I am head admin here doing idk bruh.
 My discord username - xxx__insane__xxx
 
----
+I am swasser i dev :/
 
-### Up ahead
-Soon I will be opening some other personal servers of my own mostly regarding hacking and cybersecurity so stay tuned!!

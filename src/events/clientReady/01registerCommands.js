@@ -1,5 +1,3 @@
-const { ALLOWED_EXTENSIONS } = require("discord.js");
-const config = require("../../../config.json");
 const areCommandsDifferent = require("../../utils/areCommandsDifferent");
 const getApplicationCommands = require("../../utils/getApplicationCommands");
 const getLocalCommands = require("../../utils/getLocalCommands");
@@ -7,9 +5,14 @@ const getLocalCommands = require("../../utils/getLocalCommands");
 module.exports = async (client) => {
 
   try {
+    const guildId = process.env.GUILD_ID;
+    if (!guildId) {
+      console.log("Missing GUILD_ID env var. Skipping command registration.");
+      return;
+    }
 
     const localCommands = getLocalCommands();
-    const applicationCommands = await getApplicationCommands(client, config.guildID);
+    const applicationCommands = await getApplicationCommands(client, guildId);
 
     for (const localCommand of localCommands) {
       const { name, description, options } = localCommand;
