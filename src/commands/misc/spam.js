@@ -2,8 +2,8 @@ const { Client, Interaction, ApplicationCommandOptionType } = require("discord.j
 const cooldowns = new Set();
 
 module.exports = {
-  name: "spam",
-  description: "Spam with it uhhh wow",
+  name: "repeat",
+  description: "Repeat repeat repeat repeat repeat.....",
   options: [
     {
       name: "count",
@@ -13,7 +13,7 @@ module.exports = {
     },
     {
       name: "content",
-      description: "Enter content to spam",
+      description: "Enter content to repeat",
       type: ApplicationCommandOptionType.String,
       required: true,
     }
