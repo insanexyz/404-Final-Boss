@@ -1,6 +1,9 @@
-const { ApplicationCommandOptionType, PermissionFlagsBits } = require("discord.js");
+const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits } = require("discord.js");
 
 module.exports =  {
+
+  
+
   name: "ban",
   description: "bans a member",
   // devsOnly: boolean,
@@ -22,7 +25,68 @@ module.exports =  {
   permissionsRequired: [PermissionFlagsBits.Administrator],
   botPermissions : [PermissionFlagsBits.Administrator],
 
-  callback: (client, interaction) => {
-    interaction.reply("Banned lmao scary, doesnt work yet bro!!");
+
+  /**
+   * 
+   * @param {Client} client
+   * @param {Interaction} interaction
+   */
+
+  callback: async (client, interaction) => {
+    const targetUserID = interaction.options.get("user").value;
+    const reason = interaction.options.get("reason")?.value || "No reason provided";
+
+    await interaction.deferReply();
+
+    const targetUser = await interaction.guild.members.fetch(targetUserID);
+
+    if (!targetUser) {
+      await interaction.editReply({
+        content: `${targetUser} doesn't exist in the server!`
+      })
+      return;
+    }
+
+    if (targetUser.id === interaction.guild.ownerId) {
+      await interaction.editReply({
+        // content: `Server owner can't be banned.`
+        content: `Why do you wanna ban server owner 🤭. He will cry uwu.`
+      })
+      return;
+    }
+
+    if (targetUser === client.user) {
+      interaction.editReply("Cannot bot 404 Final boss himself");
+      return;
+    }
+
+    const targetUserRolePosition = targetUser.roles.highest.position;
+    const requestUserRolePosition = interaction.member.roles.highest.position;
+    const botRolePosition = interaction.guild.members.me.roles.highest.position;
+
+    if (targetUserRolePosition >= requestUserRolePosition) {
+      interaction.editReply({
+        content: `You cant't ban ${targetUser.displayName} as they have same or higher role than you`
+      })
+      return;
+    }
+
+    if (targetUserRolePosition >= botRolePosition) {
+      interaction.editReply({
+        content: `I cant't ban ${targetUser.displayName} as they have same or higher role than me`
+      })
+      return;
+    }
+
+    // Ban the rarget user
+    try {
+      await targetUser.ban({ reason });
+      interaction.editReply({
+        content: `${targetUser.displayName} is banned!\nReason: ${reason}`
+      })
+    } catch (error) {
+      interaction.editReply(`Error banning ${targetUser.displayName}`);
+    }
+
   }
 }

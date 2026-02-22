@@ -22,7 +22,7 @@ module.exports =  {
 
   // permissionsRequired: [PermissionFlagsBits.Administrator],
   botPermissions : [PermissionFlagsBits.Administrator],
-  allowedRoles: ["1465936476134179008"],
+  minAllowedRole: "1465936476134179008",
 
   callback: async (client, interaction) => {
     const shadowBanRole = interaction.guild.roles.cache.get("1474735965703766228")
@@ -41,8 +41,6 @@ module.exports =  {
 
       return;
     }
-
-
 
     await targetMember.roles.add(shadowBanRole);
     interaction.reply({
