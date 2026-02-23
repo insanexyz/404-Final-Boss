@@ -5,6 +5,7 @@ module.exports = {
   description: "shadow bans a user",
   // devsOnly: boolean,
   // testOnly: boolean,
+  skip: true,
   options: [
     {
       name: "user",
@@ -75,16 +76,16 @@ module.exports = {
     }
 
     if (targetUser.roles.cache.has(shadowBanRole.id)) {
-      interaction.reply({
-        content: `<@${targetMember.id}> is already shadow banned!`
+      interaction.editReply({
+        content: `<@${targetUser.id}> is already shadow banned!`
       })
 
       return;
     }
 
     await targetUser.roles.add(shadowBanRole);
-    interaction.reply({
-      content: `<@${targetMember.id}> shadow banned!`,
+    interaction.editReply({
+      content: `<@${targetUser.id}> shadow banned!`,
       // ephemeral: true
     })
   }
