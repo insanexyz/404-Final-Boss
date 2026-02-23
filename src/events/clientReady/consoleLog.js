@@ -4,24 +4,12 @@ const { getRandomInt } = require("../../utils/getRandomInt");
 module.exports = (client, arg) => {
   let status = [
     {
-      name: "CornHub",
-      type: ActivityType.Streaming,
-      url: "https://www.youtube.com/watch?v=6UFjzQXpd-Q"
-    },
-    {
-      name: "Blowing Insane",
-      tupe: ActivityType.Playing
-    },
-    {
-      name: "Giving head to Insane",
-      tupe: ActivityType.Playing
-    },
-    {
       name: "404 Server",
-      type: ActivityType.Watching
+      type: ActivityType.Streaming,
+      url: "https://discord.gg/gVEuRuJdYN"
     },
     {
-      name: "Cute girl screaming",
+      name: "If you're always worried about crushing the ants beneath you... you won't be able to walk",
       type: ActivityType.Listening
     }
   ]
@@ -33,6 +21,6 @@ module.exports = (client, arg) => {
   setInterval(() => {
     let random = getRandomInt(0, status.length - 1);
     client.user.setActivity(status[random]);
-  }, 10000)
+  }, 50000)
 }
 

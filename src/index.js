@@ -1,6 +1,5 @@
 const { Client, IntentsBitField, EmbedBuilder, Embed, messageLink, ActivityType } = require("discord.js");
 require("dotenv").config() // gives access to content of env file anywhere in this file
-const { getRandomInt } = require("./utils/getRandomInt.js");
 const eventHandler = require("./handlers/eventHandler.js");
 const mongoose = require("mongoose");
 

@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "bash ./scripts/start-all.sh"
+    "start": "bash ./scripts/start-all.sh",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
