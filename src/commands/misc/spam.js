@@ -47,17 +47,19 @@ module.exports = {
       return;
     }
 
-    await interaction.reply(`Spamming "${content}" ${num} times...`);
+    await interaction.reply(`Spamming "${content.replace(/@/g, '@\u200B')}" ${num} times...`);
 
     cooldowns.add(interaction.member.id);
     setTimeout(() => {
       cooldowns.delete(interaction.member.id);
     }, 60000 * 5);
 
+    const safeContent = content.replace(/@/g, '@\u200B');
+
     for (let i = 0; i < num; i++) {
       // await interaction.channel.send(`${content}`);
       await interaction.channel.send({
-        content: content,
+        content: safeContent,
         allowedMentions: { parse: [] } // prevents all pings
       });
       await new Promise(r => setTimeout(r, delaySeconds * 1000));
