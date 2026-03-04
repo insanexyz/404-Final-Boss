@@ -44,6 +44,7 @@ module.exports = {
 
     if (num > 100) {
       await interaction.reply(`Attempt to spam ${num} times. Count cannot exceeded 100!`);
+      return;
     }
 
     await interaction.reply(`Spamming "${content}" ${num} times...`);
