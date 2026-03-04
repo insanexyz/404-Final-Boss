@@ -20,10 +20,10 @@ module.exports = {
   ],
 
   /**
-   * 
-   * @param {Client} client 
-   * @param {Interaction} interaction 
-   * @returns 
+   *
+   * @param {Client} client
+   * @param {Interaction} interaction
+   * @returns
    */
 
   callback: async (client, interaction) => {
@@ -51,10 +51,14 @@ module.exports = {
     cooldowns.add(interaction.member.id);
     setTimeout(() => {
       cooldowns.delete(interaction.member.id);
-    }, 60000*5);
+    }, 60000 * 5);
 
     for (let i = 0; i < num; i++) {
-      await interaction.channel.send(`${content}`);
+      // await interaction.channel.send(`${content}`);
+      await interaction.channel.send({
+        content: content,
+        allowedMentions: { parse: [] } // prevents all pings
+      });
       await new Promise(r => setTimeout(r, delaySeconds * 1000));
     }
   }
