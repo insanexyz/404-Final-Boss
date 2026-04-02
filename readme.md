@@ -16,3 +16,5 @@ My discord username - xxx__insane__xxx
 
 I am swasser i dev :/
 
+###
+The project is dead.
